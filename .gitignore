@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/
+.env
+.env.*
+!.env.example
+
+# Data and generated artifacts
+data/
+datasets/
+!docs/datasets/
+!docs/datasets/*.md
+docs/manuscript/*.docx
+*.docx
+*.pdf
+*.zip
+results/
+artifacts/
+references/upstream/XAI_NIDS/
+*.txt
+!requirements*.txt
+*.pcap
+*.pcapng
+*.parquet
+*.csv
+*.xlsx
+
+# Editors and OS
+.vscode/
+.idea/
+AGENTS.md
+.DS_Store
+Thumbs.db
