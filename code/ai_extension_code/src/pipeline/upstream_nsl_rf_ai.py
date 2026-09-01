@@ -109,7 +109,7 @@ def show_attack_alert(
         f"Evidence agreement: {assessment.evidence_agreement:.1%}\n"
         f"Historical precision: {assessment.historical_precision:.1%} "
         f"from {assessment.reviewed_alerts} reviewed alerts\n"
-        f"Firewall action: {assessment.firewall_action.replace('_', ' ')}\n\n"
+        f"Human-review priority: {assessment.review_priority}\n\n"
         "WHY THE MODEL MADE THIS DECISION\n"
         "Evidence supporting the prediction:\n"
         + ("\n".join(supporting) if supporting else "- No strong supporting feature was found.")
@@ -125,8 +125,10 @@ def show_attack_alert(
         "- Check whether the same source contacted many ports, hosts, or services in a short period.\n"
         "- Compare the event with firewall, router, and authentication logs.\n"
         "- Do not automatically disconnect or block the system based only on this prediction.\n\n"
-        "The local AI was invoked after IDS validation. The reliability verdict is an estimate, "
-        "not ground truth. A human analyst must record the reviewed outcome below."
+        "The LLM interpretation shown above is advisory. The analyst must read it together with "
+        "the displayed XAI evidence and operational records, decide whether the IDS prediction is "
+        "correct, a false positive, or the wrong attack class, and record the reviewed outcome below. "
+        "Validated feedback is stored for controlled IDS retraining; it does not update firewall policy."
     )
     root = tk.Tk()
     root.title("AI-Assisted Intrusion Detection Chat")
@@ -256,9 +258,9 @@ def show_attack_alert(
             "Feedback",
             f"Recorded outcome: {outcome.replace('_', ' ')}. "
             f"Updated class history: {updated.reviewed_alerts} reviewed alerts; "
-            f"historical precision {updated.historical_precision:.1%}; "
-            f"firewall threshold {updated.recommended_threshold:.3f}. "
-            "The feedback will affect later validation and can be used in controlled IDS retraining.",
+            f"historical precision {updated.historical_precision:.1%}. "
+            "The reviewed feature row and label were added to the IDS feedback store for controlled "
+            "candidate retraining and holdout evaluation. No firewall rule was changed.",
         )
         messagebox.showinfo("Feedback saved", "Analyst feedback was saved successfully.", parent=root)
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This deterministic fixture verifies the end-to-end IDS, SHAP, local-language-model, human-review, feedback, and firewall-threshold path without claiming that synthetic traffic is a substitute for an operational capture.
+This deterministic fixture verifies the end-to-end IDS, SHAP, LLM-interpretation, human-review, validated-feedback, and IDS-retraining path without claiming that synthetic traffic is a substitute for an operational capture.
 
 ## Topology
 

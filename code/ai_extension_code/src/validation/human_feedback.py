@@ -1,8 +1,8 @@
 """Evidence-based alert validation and persistent analyst feedback.
 
 The validator estimates alert reliability; it does not claim access to runtime
-ground truth. A human analyst supplies the final outcome, which is retained for
-future thresholding and model-retraining decisions.
+ground truth. A human analyst supplies the final outcome, which is retained as
+validated supervision for controlled IDS retraining.
 """
 
 from __future__ import annotations
@@ -26,8 +26,7 @@ class ValidationAssessment:
     evidence_agreement: float
     historical_precision: float
     reviewed_alerts: int
-    recommended_threshold: float
-    firewall_action: Literal["analyst_review", "candidate_block"]
+    review_priority: Literal["routine", "high"]
     reasons: list[str]
 
 
@@ -95,9 +94,8 @@ class FeedbackStore:
 class AlertValidator:
     """Estimate reliability from confidence, attribution agreement, and feedback."""
 
-    def __init__(self, feedback_store: FeedbackStore, minimum_reviews_for_block: int = 5) -> None:
+    def __init__(self, feedback_store: FeedbackStore) -> None:
         self.feedback_store = feedback_store
-        self.minimum_reviews_for_block = minimum_reviews_for_block
 
     def assess(self, event: AttackEvent) -> ValidationAssessment:
         positive = sum(max(float(item.contribution), 0.0) for item in event.evidence)
@@ -121,20 +119,13 @@ class AlertValidator:
         else:
             verdict = "uncertain"
 
-        error_rate = float(history["historical_error_rate"])
-        threshold = min(0.95, max(0.75, 0.75 + 0.20 * error_rate))
-        can_block = (
-            reliability >= threshold
-            and reviewed >= self.minimum_reviews_for_block
-            and historical_precision >= 0.80
-        )
-        action = "candidate_block" if can_block else "analyst_review"
+        review_priority = "high" if verdict != "likely_correct" else "routine"
         reasons = [
             f"Classifier confidence is {event.confidence:.3f}.",
             f"Supporting SHAP mass represents {agreement:.1%} of the selected attribution mass.",
             f"Historical analyst-confirmed precision for {event.predicted_class} is "
             f"{historical_precision:.1%} across {reviewed} reviewed alerts.",
-            f"The current feedback-aware firewall threshold is {threshold:.3f}.",
+            "The reliability estimate prioritizes human review; it does not change firewall policy.",
         ]
         return ValidationAssessment(
             reliability_score=reliability,
@@ -142,8 +133,7 @@ class AlertValidator:
             evidence_agreement=agreement,
             historical_precision=historical_precision,
             reviewed_alerts=reviewed,
-            recommended_threshold=threshold,
-            firewall_action=action,
+            review_priority=review_priority,
             reasons=reasons,
         )
 

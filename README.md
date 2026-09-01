@@ -1,6 +1,6 @@
 # Human-in-the-Loop Explainable Intrusion Detection
 
-Research implementation of an explainable network intrusion-detection workflow. The repository combines the published XAI-NIDS reference implementation with alert validation, grounded language-model explanations, analyst feedback, adaptive firewall thresholds, and controlled IDS retraining.
+Research implementation of an explainable network intrusion-detection workflow. The repository combines the published XAI-NIDS reference implementation with alert validation, grounded LLM interpretation, explicit analyst adjudication, and controlled IDS retraining from validated feedback.
 
 ## Repository layout
 

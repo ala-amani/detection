@@ -1,6 +1,6 @@
 # Human-in-the-Loop XAI-NIDS Validation
 
-This package extends the published XAI_NIDS NSL-KDD Random Forest workflow. After a non-normal prediction, it ranks local SHAP evidence, estimates alert reliability, invokes a local Ollama model, and asks an analyst to record `Correct`, `False positive`, or `Wrong attack class` with a reason. Feedback changes later validation and firewall thresholds and supplies reviewed rows for controlled IDS retraining.
+This package extends the published XAI_NIDS NSL-KDD Random Forest workflow. After a non-normal prediction, it ranks local SHAP evidence, estimates alert reliability, and invokes a local Ollama model. The analyst sees the LLM interpretation beside the selected XAI evidence, checks it against operational records, and records `Correct`, `False positive`, or `Wrong attack class` with a reason. The reviewed row and label are returned to the IDS feedback store for controlled retraining; the feedback does not modify firewall policy.
 
 ## Requirements
 
@@ -42,7 +42,7 @@ Use `--test-row 1` for the reproducible wrong-class example (actual DoS, predict
 
 - The language model is advisory and receives only structured IDS, validation, and top-k SHAP evidence.
 - Human feedback is append-only JSONL and includes the complete transformed feature row.
-- Thresholds react immediately to reviewed class history, but the live IDS is never silently modified.
+- Validated feedback is routed to the IDS retraining dataset, while the live IDS is never silently modified.
 - `src.validation.retraining` creates a cloned candidate model and evaluates it on an untouched holdout set before any deployment decision.
 - Datasets, feedback files, generated results, packet captures, model artifacts, secrets, and caches are intentionally excluded from source control.
 

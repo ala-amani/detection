@@ -19,7 +19,7 @@ class RecordingClient:
             "DDoS Alert", "Summary", ["Packet length is unusual"], "Reasoning",
             "Model confidence is 92 percent", ["Review the flow rate"],
             "This explanation does not prove that an attack occurred",
-            "likely correct", "analyst review", "Is this alert correct?",
+            "likely correct", "prioritize analyst review", "Is this alert correct?",
         )
 
 
@@ -49,7 +49,7 @@ class FakeResponses:
             "reasoning": "Reasoning", "confidence_note": "Confidence",
             "recommended_checks": ["Review"], "limitations": "Limitation",
             "validation_verdict": "uncertain",
-            "firewall_recommendation": "analyst review",
+            "review_recommendation": "analyst review",
             "human_review_question": "Is this alert correct?",
         }
         return type("Response", (), {"output_text": json.dumps(payload)})()
@@ -87,10 +87,10 @@ def test_conflicting_low_confidence_alert_requires_review(tmp_path) -> None:
     )
     assessment = validator.assess(event)
     assert assessment.verdict in {"uncertain", "likely_incorrect"}
-    assert assessment.firewall_action == "analyst_review"
+    assert assessment.review_priority == "high"
 
 
-def test_false_positive_feedback_changes_future_validation(tmp_path) -> None:
+def test_false_positive_feedback_is_routed_to_ids_retraining(tmp_path) -> None:
     store = FeedbackStore(tmp_path / "feedback.jsonl")
     validator = AlertValidator(store)
     event = AttackEvent(
@@ -106,7 +106,7 @@ def test_false_positive_feedback_changes_future_validation(tmp_path) -> None:
     after = validator.assess(event)
     assert after.reviewed_alerts == 1
     assert after.historical_precision < before.historical_precision
-    assert after.recommended_threshold > before.recommended_threshold
+    assert store.training_examples() == [({"scan_rate": 1.0}, "Normal")]
 
 
 def test_wrong_attack_class_requires_corrected_label(tmp_path) -> None:

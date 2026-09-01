@@ -41,7 +41,7 @@ class AnalystNarrative:
     recommended_checks: list[str]
     limitations: str
     validation_verdict: str
-    firewall_recommendation: str
+    review_recommendation: str
     human_review_question: str
 
 
@@ -63,13 +63,13 @@ NARRATIVE_SCHEMA: dict[str, Any] = {
         "recommended_checks": {"type": "array", "items": {"type": "string"}},
         "limitations": {"type": "string"},
         "validation_verdict": {"type": "string"},
-        "firewall_recommendation": {"type": "string"},
+        "review_recommendation": {"type": "string"},
         "human_review_question": {"type": "string"},
     },
     "required": [
         "title", "summary", "observed_signs", "reasoning", "confidence_note",
         "recommended_checks", "limitations", "validation_verdict",
-        "firewall_recommendation", "human_review_question",
+        "review_recommendation", "human_review_question",
     ],
 }
 
@@ -185,7 +185,7 @@ class OllamaNarrativeClient:
                         "technical feature using the supplied glossary. State which signs support and which oppose "
                         "the prediction. Treat confidence near 51 percent as low and borderline. A probability is "
                         "confidence, never confirmation. Explain the independent validation verdict and whether the "
-                        "firewall should hold the alert for human review. Ask the analyst to label the alert as correct, "
+                        "analyst should prioritize the alert for review. Ask the analyst to label the alert as correct, "
                         "false positive, or wrong attack class. Never describe the validation estimate as ground truth."
                     ),
                 },
@@ -236,7 +236,8 @@ class OllamaNarrativeClient:
                 "Explain technical terms plainly. Say when the available evidence cannot answer a "
                 "question. SHAP explains model influence, not causality. Recommend verification; "
                 "never claim the attack is proven and never order an automatic shutdown. Explain that the validator "
-                "estimates reliability and only human feedback establishes the reviewed outcome.\n\n"
+                "estimates reliability and only human feedback establishes the reviewed outcome. Validated feedback "
+                "is returned to the IDS retraining workflow, not used to modify firewall policy.\n\n"
                 f"Fixed event evidence:\n{event_json}\n\nValidation assessment:\n{validation_json}"
             ),
         }, *history[-8:], {"role": "user", "content": question}]
