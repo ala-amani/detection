@@ -1,4 +1,4 @@
-"""Alert validation, human feedback, and firewall decision support."""
+"""Alert validation, analyst feedback, and controlled IDS retraining."""
 
 from .human_feedback import (
     AlertValidator,

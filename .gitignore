@@ -18,6 +18,7 @@ docs/manuscript/*.docx
 *.zip
 results/
 artifacts/
+tmp/
 references/upstream/XAI_NIDS/
 *.txt
 !requirements*.txt
