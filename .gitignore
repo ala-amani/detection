@@ -9,6 +9,7 @@ __pycache__/
 
 # Data and generated artifacts
 data/
+!src/data/
 datasets/
 !docs/datasets/
 !docs/datasets/*.md

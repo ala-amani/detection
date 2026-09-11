@@ -8,6 +8,7 @@ Research implementation of an explainable network intrusion-detection workflow. 
   - `src/explainability/` — SHAP evidence records and the schema-constrained LLM interpretation
   - `src/validation/` — reliability estimation, append-only analyst feedback, and controlled candidate retraining
   - `src/pipeline/` — the NSL-KDD Random Forest pipeline, the analyst interface, and the synthetic local-network evaluation
+  - `src/data/` — NSL-KDD loading and attack-family mapping
 - `examples/` — runnable scripts, including the deterministic synthetic MikroTik packet generator
 - `tests/` — automated tests (`python -m pytest`)
 - `XAI_NIDS/` — upstream reference implementation of the base study
